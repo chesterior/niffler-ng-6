@@ -1,20 +1,35 @@
 package guru.qa.niffler.config;
 
 enum DockerConfig implements Config {
-  INSTANCE;
+    INSTANCE;
 
-  @Override
-  public String frontUrl() {
-    return "http://frontend.niffler.dc/";
-  }
+    @Override
+    public String frontUrl() {
+        return "";
+    }
 
-  @Override
-  public String spendUrl() {
-    return "http://127.0.0.1:8093/";
-  }
+    @Override
+    public String authUrl() {
+        return "";
+    }
 
-  @Override
-  public String ghUrl() {
-    return "https://api.github.com/";
-  }
+    @Override
+    public String gatewayUrl() {
+        return "";
+    }
+
+    @Override
+    public String userdataUrl() {
+        return "";
+    }
+
+    @Override
+    public String spendUrl() {
+        return "";
+    }
+
+    @Override
+    public String ghUrl() {
+        return "";
+    }
 }

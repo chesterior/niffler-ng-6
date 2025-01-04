@@ -2,17 +2,23 @@ package guru.qa.niffler.config;
 
 public interface Config {
 
-  static Config getInstance() {
-    return LocalConfig.INSTANCE;
-  }
-  
-  static Config getInstanceDocker() {
-    return DockerConfig.INSTANCE;
-  }
+    static Config getInstance() {
+        return LocalConfig.INSTANCE;
+    }
 
-  String frontUrl();
+    static Config getInstanceDocker() {
+        return DockerConfig.INSTANCE;
+    }
 
-  String spendUrl();
+    String frontUrl();
 
-  String ghUrl();
+    String authUrl();
+
+    String gatewayUrl();
+
+    String userdataUrl();
+
+    String spendUrl();
+
+    String ghUrl();
 }

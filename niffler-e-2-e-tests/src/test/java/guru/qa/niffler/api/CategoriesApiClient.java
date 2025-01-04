@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CategoriesApiClient {
 
-    private static final Retrofit retrofit = new Retrofit.Builder()
+    private final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(Config.getInstance().spendUrl())
             .addConverterFactory(JacksonConverterFactory.create())
             .build();
 
-    private static final CategoriesApi categoryApi = retrofit.create(CategoriesApi.class);
+    private final CategoriesApi categoryApi = retrofit.create(CategoriesApi.class);
 
     public CategoryJson addCategory(CategoryJson category) {
         final Response<CategoryJson> response;
@@ -31,7 +31,7 @@ public class CategoriesApiClient {
         return response.body();
     }
 
-    public static CategoryJson updateCategory(CategoryJson category) {
+    public CategoryJson updateCategory(CategoryJson category) {
         final Response<CategoryJson> response;
         try {
             response = categoryApi.updateCategory(category)
