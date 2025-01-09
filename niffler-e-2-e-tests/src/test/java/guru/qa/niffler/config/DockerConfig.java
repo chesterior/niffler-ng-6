@@ -14,6 +14,11 @@ enum DockerConfig implements Config {
     }
 
     @Override
+    public String authJdbcUrl() {
+        return "";
+    }
+
+    @Override
     public String gatewayUrl() {
         return "";
     }
@@ -24,7 +29,22 @@ enum DockerConfig implements Config {
     }
 
     @Override
+    public String userdataJdbcUrl() {
+        return "";
+    }
+
+    @Override
     public String spendUrl() {
+        return "";
+    }
+
+    @Override
+    public String spendJdbcUrl() {
+        return "";
+    }
+
+    @Override
+    public String currencyJdbcUrl() {
         return "";
     }
 
