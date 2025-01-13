@@ -20,7 +20,7 @@ public class JdbcTest {
                         new Date(),
                         new CategoryJson(
                                 null,
-                                "testName-1",
+                                "testName-2",
                                 "duck",
                                 false
                         ),
