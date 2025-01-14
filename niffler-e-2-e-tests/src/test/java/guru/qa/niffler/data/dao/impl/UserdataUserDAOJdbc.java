@@ -61,7 +61,7 @@ public class UserdataUserDAOJdbc implements UserdataUserDAO {
                         UserEntity user = new UserEntity();
                         user.setId(rs.getObject("id", UUID.class));
                         user.setUsername(rs.getString("username"));
-                        user.setCurrency((CurrencyValues) rs.getObject("currency"));
+                        user.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                         user.setFirstname(rs.getString("firstname"));
                         user.setSurname(rs.getString("surname"));
                         user.setPhoto(rs.getBytes("photo"));
@@ -91,7 +91,7 @@ public class UserdataUserDAOJdbc implements UserdataUserDAO {
                         UserEntity user = new UserEntity();
                         user.setId(rs.getObject("id", UUID.class));
                         user.setUsername(rs.getString("username"));
-                        user.setCurrency((CurrencyValues) rs.getObject("currency"));
+                        user.setCurrency((CurrencyValues.valueOf(rs.getString("currency"))));
                         user.setFirstname(rs.getString("firstname"));
                         user.setSurname(rs.getString("surname"));
                         user.setPhoto(rs.getBytes("photo"));
