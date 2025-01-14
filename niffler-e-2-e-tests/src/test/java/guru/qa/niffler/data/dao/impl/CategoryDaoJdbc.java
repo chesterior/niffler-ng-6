@@ -72,7 +72,7 @@ public class CategoryDaoJdbc implements CategoryDao {
 
     @Override
     public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String categoryName) {
-        try (Connection connection = Databases.connection(CFG.currencyJdbcUrl())) {
+        try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "SELECT * FROM category WHERE username = ? AND name = ?"
             )) {
@@ -99,15 +99,14 @@ public class CategoryDaoJdbc implements CategoryDao {
 
     @Override
     public List<CategoryEntity> findAllByUsername(String username) {
-        try (Connection connection = Databases.connection(CFG.currencyJdbcUrl())) {
+        try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT * FROM category WHERE username = ? AND name = ?"
+                    "SELECT * FROM category WHERE username = ?"
             )) {
                 ps.setObject(1, username);
-                ps.execute();
-                try (ResultSet rs = ps.getResultSet()) {
+                try (ResultSet rs = ps.executeQuery()) {
                     List<CategoryEntity> categories = new ArrayList<>();
-                    if (rs.next()) {
+                    while (rs.next()) {
                         CategoryEntity ce = new CategoryEntity();
                         ce.setId(rs.getObject("id", UUID.class));
                         ce.setUsername(rs.getString("username"));
@@ -125,7 +124,7 @@ public class CategoryDaoJdbc implements CategoryDao {
 
     @Override
     public void deleteCategory(CategoryEntity category) {
-        try (Connection connection = Databases.connection(CFG.currencyJdbcUrl())) {
+        try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "DELETE FROM category WHERE id = ?"
             )) {

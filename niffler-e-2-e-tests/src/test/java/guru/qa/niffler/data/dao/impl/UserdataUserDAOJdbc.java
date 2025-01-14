@@ -18,7 +18,7 @@ public class UserdataUserDAOJdbc implements UserdataUserDAO {
     public UserEntity createUser(UserEntity user) {
         try (Connection connection = Databases.connection(CFG.userdataJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO user (username, currency, firstname, surname, photo, photo_small, full_name) " +
+                    "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
@@ -61,7 +61,7 @@ public class UserdataUserDAOJdbc implements UserdataUserDAO {
                         UserEntity user = new UserEntity();
                         user.setId(rs.getObject("id", UUID.class));
                         user.setUsername(rs.getString("username"));
-                        user.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                        user.setCurrency((CurrencyValues) rs.getObject("currency"));
                         user.setFirstname(rs.getString("firstname"));
                         user.setSurname(rs.getString("surname"));
                         user.setPhoto(rs.getBytes("photo"));
@@ -91,7 +91,7 @@ public class UserdataUserDAOJdbc implements UserdataUserDAO {
                         UserEntity user = new UserEntity();
                         user.setId(rs.getObject("id", UUID.class));
                         user.setUsername(rs.getString("username"));
-                        user.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                        user.setCurrency((CurrencyValues) rs.getObject("currency"));
                         user.setFirstname(rs.getString("firstname"));
                         user.setSurname(rs.getString("surname"));
                         user.setPhoto(rs.getBytes("photo"));

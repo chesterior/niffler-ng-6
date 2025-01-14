@@ -52,7 +52,7 @@ public class SpendDaoJdbc implements SpendDao {
 
     @Override
     public Optional<SpendEntity> findSpendById(UUID id) {
-        try (Connection connection = Databases.connection(CFG.currencyJdbcUrl())) {
+        try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "SELECT * FROM spend WHERE id = ?"
             )) {
@@ -64,10 +64,10 @@ public class SpendDaoJdbc implements SpendDao {
                         spend.setId(rs.getObject("id", UUID.class));
                         spend.setUsername(rs.getString("username"));
                         spend.setSpendDate(rs.getDate("spend_date"));
-                        spend.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                        spend.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                         spend.setAmount(rs.getDouble("amount"));
                         spend.setDescription(rs.getString("description"));
-                        spend.setCategory(rs.getObject("category", CategoryEntity.class));
+                        spend.setCategory(rs.getObject("category_id", CategoryEntity.class));
                         return Optional.of(spend);
                     } else {
                         return Optional.empty();
@@ -81,23 +81,22 @@ public class SpendDaoJdbc implements SpendDao {
 
     @Override
     public List<SpendEntity> findAllByUsername(String username) {
-        try (Connection connection = Databases.connection(CFG.currencyJdbcUrl())) {
+        try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "SELECT * FROM spend WHERE username = ?"
             )) {
                 ps.setObject(1, username);
-                ps.execute();
-                try (ResultSet rs = ps.getResultSet()) {
+                try (ResultSet rs = ps.executeQuery()) {
                     List<SpendEntity> spends = new ArrayList<>();
-                    if (rs.next()) {
+                    while (rs.next()) {
                         SpendEntity sp = new SpendEntity();
                         sp.setId(rs.getObject("id", UUID.class));
                         sp.setUsername(rs.getString("username"));
                         sp.setSpendDate(rs.getDate("spend_date"));
-                        sp.setCurrency(rs.getObject("currency", CurrencyValues.class));
+                        sp.setCurrency((CurrencyValues) rs.getObject("currency"));
                         sp.setAmount(rs.getDouble("amount"));
                         sp.setDescription(rs.getString("description"));
-                        sp.setCategory(rs.getObject("category", CategoryEntity.class));
+                        sp.setCategory(rs.getObject("category_id", CategoryEntity.class));
                         spends.add(sp);
                     }
                     return spends;
@@ -110,7 +109,7 @@ public class SpendDaoJdbc implements SpendDao {
 
     @Override
     public void deleteSpend(SpendEntity spend) {
-        try (Connection connection = Databases.connection(CFG.currencyJdbcUrl())) {
+        try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "DELETE FROM spend WHERE id = ?"
             )) {
