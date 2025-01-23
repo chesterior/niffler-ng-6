@@ -11,7 +11,7 @@ import java.util.Date;
 public class JdbcTest {
 
     @Test
-    void testJdbc() {
+    void txTest() {
         SpendDbClient spendDbClient = new SpendDbClient();
 
         SpendJson spend = spendDbClient.createSpend(
@@ -20,7 +20,7 @@ public class JdbcTest {
                         new Date(),
                         new CategoryJson(
                                 null,
-                                "testName-2",
+                                "testName-5",
                                 "duck",
                                 false
                         ),
