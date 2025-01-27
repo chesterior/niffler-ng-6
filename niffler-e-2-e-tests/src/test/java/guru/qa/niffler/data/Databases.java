@@ -29,7 +29,7 @@ public class Databases {
     public record XaConsumer<T>(Consumer<Connection> function, String jdbcUrl) {
     }
 
-    public static <T> T transaction(Function<Connection, T> function, String jdbcUrl) {
+    public static <T> T transaction(Function<Connection, T> function, String jdbcUrl, int isolationLevel) {
         Connection connection = null;
         try {
             connection = connection(jdbcUrl);
@@ -37,6 +37,7 @@ public class Databases {
             T result = function.apply(connection);
             connection.commit();
             connection.setAutoCommit(true);
+            connection.setTransactionIsolation(isolationLevel);
             return result;
         } catch (SQLException e) {
             if (connection != null) {
@@ -51,13 +52,15 @@ public class Databases {
         }
     }
 
-    public static <T> T xaTransaction(XaFunction<T>... actions) {
+    public static <T> T xaTransaction(int isolationLevel, XaFunction<T>... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
             ut.begin();
             T result = null;
             for (XaFunction<T> action : actions) {
-                result = action.function.apply(connection(action.jdbcUrl));
+                Connection connection = connection(action.jdbcUrl);
+                connection.setTransactionIsolation(isolationLevel);
+                result = action.function.apply(connection);
             }
             ut.commit();
             return result;
@@ -71,7 +74,7 @@ public class Databases {
         }
     }
 
-    public static void transaction(Consumer<Connection> consumer, String jdbcUrl) {
+    public static void transaction(Consumer<Connection> consumer, String jdbcUrl, int isolationLevel) {
         Connection connection = null;
         try {
             connection = connection(jdbcUrl);
@@ -79,6 +82,7 @@ public class Databases {
             consumer.accept(connection);
             connection.commit();
             connection.setAutoCommit(true);
+            connection.setTransactionIsolation(isolationLevel);
         } catch (SQLException e) {
             if (connection != null) {
                 try {
@@ -92,12 +96,14 @@ public class Databases {
         }
     }
 
-    public static void xaTransaction(XaConsumer... actions) {
+    public static void xaTransaction(int isolationLevel, XaConsumer... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
             ut.begin();
             for (XaConsumer action : actions) {
-                action.function.accept(connection(action.jdbcUrl));
+                Connection connection = connection(action.jdbcUrl);
+                connection.setTransactionIsolation(isolationLevel);
+                action.function.accept(connection);
             }
             ut.commit();
         } catch (Exception e) {
