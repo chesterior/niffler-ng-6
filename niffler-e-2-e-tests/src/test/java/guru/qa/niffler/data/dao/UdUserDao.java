@@ -5,7 +5,8 @@ import guru.qa.niffler.data.entity.UserEntity;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserdataUserDAO {
+public interface UdUserDao {
+
     UserEntity createUser(UserEntity user);
 
     Optional<UserEntity> findById(UUID id);
