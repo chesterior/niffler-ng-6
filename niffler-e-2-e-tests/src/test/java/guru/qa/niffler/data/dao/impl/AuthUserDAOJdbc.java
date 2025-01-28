@@ -6,6 +6,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -108,6 +110,29 @@ public class AuthUserDAOJdbc implements AuthUserDao {
         )) {
             ps.setObject(1, user.getId());
             ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<AuthUserEntity> findAll() {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM \"user\"")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                List<AuthUserEntity> authUsers = new ArrayList<>();
+                while (rs.next()) {
+                    AuthUserEntity au = new AuthUserEntity();
+                    au.setId(rs.getObject("id", UUID.class));
+                    au.setUsername(rs.getString("username"));
+                    au.setEnable(rs.getBoolean("enabled"));
+                    au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+                    au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+                    au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+                    authUsers.add(au);
+                }
+                return authUsers;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

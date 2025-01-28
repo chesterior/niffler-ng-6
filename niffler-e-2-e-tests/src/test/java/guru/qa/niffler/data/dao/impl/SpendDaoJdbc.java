@@ -118,4 +118,30 @@ public class SpendDaoJdbc implements SpendDao {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<SpendEntity> findAll() {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM spend")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                List<SpendEntity> spends = new ArrayList<>();
+                while (rs.next()) {
+                    SpendEntity sp = new SpendEntity();
+                    sp.setId(rs.getObject("id", UUID.class));
+                    sp.setUsername(rs.getString("username"));
+                    sp.setSpendDate(rs.getDate("spend_date"));
+                    sp.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+                    sp.setAmount(rs.getDouble("amount"));
+                    sp.setDescription(rs.getString("description"));
+                    CategoryEntity categoryEntity = new CategoryEntity();
+                    categoryEntity.setId(rs.getObject("category_id", UUID.class));
+                    sp.setCategory(categoryEntity);
+                    spends.add(sp);
+                }
+                return spends;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
