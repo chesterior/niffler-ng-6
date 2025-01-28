@@ -1,9 +1,8 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.data.dao.AuthAuthorityDao;
-import guru.qa.niffler.data.entity.AuthAuthorityEntity;
-import guru.qa.niffler.data.entity.AuthUserEntity;
+import guru.qa.niffler.data.dao.AuthorityDao;
 import guru.qa.niffler.data.entity.Authority;
+import guru.qa.niffler.data.entity.AuthorityEntity;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,22 +11,22 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
+public class AuthorityDaoJdbc implements AuthorityDao {
 
     private final Connection connection;
 
-    public AuthAuthorityDaoJdbc(Connection connection) {
+    public AuthorityDaoJdbc(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public void create(AuthAuthorityEntity... authority) {
+    public void create(AuthorityEntity... authority) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO authority (user_id, authority) VALUES (?, ?)",
                 PreparedStatement.RETURN_GENERATED_KEYS
         )) {
-            for (AuthAuthorityEntity a : authority) {
-                ps.setObject(1, a.getUser());
+            for (AuthorityEntity a : authority) {
+                ps.setObject(1, a.getUserId());
                 ps.setString(2, a.getAuthority().name());
                 ps.addBatch();
                 ps.clearParameters();
@@ -39,7 +38,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public Optional<AuthAuthorityEntity> findById(UUID id) {
+    public Optional<AuthorityEntity> findById(UUID id) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM authority WHERE id = ?"
         )) {
@@ -47,9 +46,9 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
             ps.execute();
             try (ResultSet rs = ps.getResultSet()) {
                 if (rs.next()) {
-                    AuthAuthorityEntity authority = new AuthAuthorityEntity();
+                    AuthorityEntity authority = new AuthorityEntity();
                     authority.setId(rs.getObject("id", UUID.class));
-                    authority.setUser(rs.getObject("user_id", AuthUserEntity.class));
+                    authority.setUserId(rs.getObject("user_id", UUID.class));
                     authority.setAuthority(Authority.valueOf(rs.getString("authority")));
                     return Optional.of(authority);
                 } else {
@@ -62,16 +61,16 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public Optional<AuthAuthorityEntity> findByUserId(String username) {
+    public Optional<AuthorityEntity> findByUserId(String username) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM authority WHERE username = ?"
         )) {
             ps.setObject(1, username);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    AuthAuthorityEntity authority = new AuthAuthorityEntity();
+                    AuthorityEntity authority = new AuthorityEntity();
                     authority.setId(rs.getObject("id", UUID.class));
-                    authority.setUser(rs.getObject("user_id", AuthUserEntity.class));
+                    authority.setId(rs.getObject("user_id", UUID.class));
                     authority.setAuthority(Authority.valueOf(rs.getString("authority")));
                     return Optional.of(authority);
                 } else {
@@ -84,7 +83,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public void deleteById(AuthAuthorityEntity user) {
+    public void deleteById(AuthorityEntity user) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "DELETE FROM authority WHERE id = ?"
         )) {

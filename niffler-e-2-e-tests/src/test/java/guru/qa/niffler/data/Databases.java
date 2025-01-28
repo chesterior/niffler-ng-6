@@ -116,7 +116,7 @@ public class Databases {
         }
     }
 
-    private static DataSource dataSource(String jdbcUrl) {
+    public static DataSource dataSource(String jdbcUrl) {
         return dataSources.computeIfAbsent(jdbcUrl, key -> {
             AtomikosDataSourceBean dsBean = new AtomikosDataSourceBean();
             final String uniqId = StringUtils.substringAfter(jdbcUrl, "5432/");
