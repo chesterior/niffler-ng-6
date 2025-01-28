@@ -1,7 +1,7 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.data.dao.AuthAuthorityDao;
-import guru.qa.niffler.data.entity.AuthAuthorityEntity;
+import guru.qa.niffler.data.dao.AuthorityDao;
+import guru.qa.niffler.data.entity.AuthorityEntity;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -11,23 +11,23 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AuthAuthorityDaoSpringJDBC implements AuthAuthorityDao {
+public class AuthorityDaoSpringJDBC implements AuthorityDao {
 
     private final DataSource dataSource;
 
-    public AuthAuthorityDaoSpringJDBC(DataSource dataSource) {
+    public AuthorityDaoSpringJDBC(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public void create(AuthAuthorityEntity... authority) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate();
-        jdbcTemplate.batchUpdate("INSERT INTO autority (user_id, authority) VALUES (?, ?)",
+    public void create(AuthorityEntity... authority) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.batchUpdate("INSERT INTO authority (user_id, authority) VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setObject(1, authority[i].getUser());
-                        ps.setObject(2, authority[i].getAuthority());
+                        ps.setObject(1, authority[i].getUserId());
+                        ps.setString(2, authority[i].getAuthority().name());
                     }
 
                     @Override
@@ -39,17 +39,17 @@ public class AuthAuthorityDaoSpringJDBC implements AuthAuthorityDao {
     }
 
     @Override
-    public Optional<AuthAuthorityEntity> findById(UUID id) {
+    public Optional<AuthorityEntity> findById(UUID id) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<AuthAuthorityEntity> findByUserId(String username) {
+    public Optional<AuthorityEntity> findByUserId(String username) {
         return Optional.empty();
     }
 
     @Override
-    public void deleteById(AuthAuthorityEntity authAuthority) {
+    public void deleteById(AuthorityEntity authAuthority) {
 
     }
 }
