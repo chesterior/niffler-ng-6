@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,7 +63,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
     }
 
     @Override
-    public Optional<AuthorityEntity> findByUserId(String username) {
+    public Optional<AuthorityEntity> findByUserId(UUID username) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM authority WHERE username = ?"
         )) {
@@ -89,6 +91,26 @@ public class AuthorityDaoJdbc implements AuthorityDao {
         )) {
             ps.setObject(1, user.getId());
             ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<AuthorityEntity> findAll() {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM authority")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                List<AuthorityEntity> authorities = new ArrayList<>();
+                while (rs.next()) {
+                    AuthorityEntity au = new AuthorityEntity();
+                    au.setId(rs.getObject("id", UUID.class));
+                    au.setId(rs.getObject("user_id", UUID.class));
+                    au.setAuthority(Authority.valueOf(rs.getString("authority")));
+                    authorities.add(au);
+                }
+                return authorities;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
