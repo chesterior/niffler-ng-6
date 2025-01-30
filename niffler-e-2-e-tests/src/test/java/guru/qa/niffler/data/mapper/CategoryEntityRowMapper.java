@@ -22,6 +22,6 @@ public class CategoryEntityRowMapper implements RowMapper<CategoryEntity> {
         result.setUsername(rs.getString("username"));
         result.setName(rs.getString("name"));
         result.setArchived(rs.getBoolean("archived"));
-        return null;
+        return result;
     }
 }
