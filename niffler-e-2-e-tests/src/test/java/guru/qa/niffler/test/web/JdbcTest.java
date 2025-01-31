@@ -59,10 +59,10 @@ public class JdbcTest {
     void springJdbcTest() {
         UsersDbClient usersDbClient = new UsersDbClient();
 
-        UserJson user = usersDbClient.createUserSpringJdbs(
+        UserJson user = usersDbClient.createUserJdbc(
                 new UserJson(
                         null,
-                        "valentin-1",
+                        "valentin-4",
                         CurrencyValues.RUB,
                         null,
                         null,
