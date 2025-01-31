@@ -6,12 +6,10 @@ import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UsersDbClient;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-@Disabled
 public class JdbcTest {
 
     @Test
@@ -37,6 +35,26 @@ public class JdbcTest {
         System.out.println(spend);
     }
 
+//    @Test
+//    void xaTxTest() {
+//        UsersDbClient usersDbClient = new UsersDbClient();
+//
+//        UserJson user = usersDbClient.createUser(
+//                new UserJson(
+//                        null,
+//                        "valentin",
+//                        CurrencyValues.RUB,
+//                        null,
+//                        null,
+//                        null,
+//                        null,
+//                        null,
+//                        null
+//                )
+//        );
+//        System.out.println(user);
+//    }
+
     @Test
     void springJdbcTest() {
         UsersDbClient usersDbClient = new UsersDbClient();
@@ -44,7 +62,7 @@ public class JdbcTest {
         UserJson user = usersDbClient.createUserSpringJdbs(
                 new UserJson(
                         null,
-                        "valentin",
+                        "valentin-1",
                         CurrencyValues.RUB,
                         null,
                         null,

@@ -1,12 +1,13 @@
 package guru.qa.niffler.data.dao.impl;
 
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthorityDao;
 import guru.qa.niffler.data.entity.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthorityEntityRowMapper;
+import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -15,15 +16,11 @@ import java.util.UUID;
 
 public class AuthorityDaoSpringJDBC implements AuthorityDao {
 
-    private final DataSource dataSource;
-
-    public AuthorityDaoSpringJDBC(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    private static final Config CFG = Config.getInstance();
 
     @Override
     public void create(AuthorityEntity... authority) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         jdbcTemplate.batchUpdate("INSERT INTO authority (user_id, authority) VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {
                     @Override
@@ -42,7 +39,7 @@ public class AuthorityDaoSpringJDBC implements AuthorityDao {
 
     @Override
     public Optional<AuthorityEntity> findById(UUID id) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
                         "SELECT * FROM \"user\" WHERE id =?",
@@ -53,7 +50,7 @@ public class AuthorityDaoSpringJDBC implements AuthorityDao {
 
     @Override
     public Optional<AuthorityEntity> findByUserId(UUID username) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
                         "SELECT * FROM \"user\" WHERE username =?",
@@ -64,7 +61,7 @@ public class AuthorityDaoSpringJDBC implements AuthorityDao {
 
     @Override
     public void deleteById(AuthorityEntity authAuthority) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         jdbcTemplate.update(
                 "DELETE FROM authority WHERE id =?", authAuthority.getId()
         );
@@ -72,7 +69,7 @@ public class AuthorityDaoSpringJDBC implements AuthorityDao {
 
     @Override
     public List<AuthorityEntity> findAll() {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return jdbcTemplate.query("SELECT * FROM authority", AuthorityEntityRowMapper.instance);
     }
 }

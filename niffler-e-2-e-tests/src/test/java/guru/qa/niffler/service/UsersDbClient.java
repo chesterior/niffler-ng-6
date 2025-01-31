@@ -1,6 +1,9 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.AuthUserDao;
+import guru.qa.niffler.data.dao.AuthorityDao;
+import guru.qa.niffler.data.dao.UdUserDao;
 import guru.qa.niffler.data.dao.impl.AuthUserDaoSpringJDBC;
 import guru.qa.niffler.data.dao.impl.AuthorityDaoSpringJDBC;
 import guru.qa.niffler.data.dao.impl.UdUserDaoSpringJDBC;
@@ -8,6 +11,7 @@ import guru.qa.niffler.data.entity.AuthUserEntity;
 import guru.qa.niffler.data.entity.Authority;
 import guru.qa.niffler.data.entity.AuthorityEntity;
 import guru.qa.niffler.data.entity.UserEntity;
+import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -16,31 +20,38 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Arrays;
 
-import static guru.qa.niffler.data.Databases.dataSource;
+import static guru.qa.niffler.data.tpl.DataSources.dataSource;
 
 public class UsersDbClient {
 
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    private final AuthUserDao authUserDao = new AuthUserDaoSpringJDBC();
+    private final AuthorityDao authorityDao = new AuthorityDaoSpringJDBC();
+    private final UdUserDao udUserDao = new UdUserDaoSpringJDBC();
 
-    private final TransactionTemplate transactionTemplate = new TransactionTemplate(
+    private final TransactionTemplate txTemplate = new TransactionTemplate(
             new JdbcTransactionManager(
                     dataSource(CFG.authJdbcUrl())
             )
     );
 
+    private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
+            CFG.authJdbcUrl(),
+            CFG.userdataJdbcUrl()
+    );
+
     public UserJson createUserSpringJdbs(UserJson user) {
-        transactionTemplate.execute(status -> {
+        return xaTransactionTemplate.execute(() -> {
                     AuthUserEntity authUser = new AuthUserEntity();
                     authUser.setUsername(user.username());
-                    authUser.setPassword("123456");
+                    authUser.setPassword(pe.encode("123456"));
                     authUser.setEnable(true);
                     authUser.setAccountNonExpired(true);
                     authUser.setAccountNonLocked(true);
                     authUser.setCredentialsNonExpired(true);
 
-                    AuthUserEntity createdAuthUser = new AuthUserDaoSpringJDBC((dataSource(CFG.authJdbcUrl())))
-                            .create(authUser);
+                    AuthUserEntity createdAuthUser = authUserDao.create(authUser);
 
                     AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                             e -> {
@@ -51,17 +62,12 @@ public class UsersDbClient {
                             }
                     ).toArray(AuthorityEntity[]::new);
 
-                    new AuthorityDaoSpringJDBC((dataSource(CFG.authJdbcUrl())))
-                            .create(authorityEntities);
-                    return null;
+                    authorityDao.create(authorityEntities);
+                    return UserJson.fromEntity(
+                            udUserDao.createUser(UserEntity.fromJson(user)),
+                            null
+                    );
                 }
-        );
-
-        return UserJson.fromEntity(
-                new UdUserDaoSpringJDBC(dataSource(CFG.userdataJdbcUrl()))
-                        .createUser(
-                                UserEntity.fromJson(user)
-                        ), null
         );
     }
 
