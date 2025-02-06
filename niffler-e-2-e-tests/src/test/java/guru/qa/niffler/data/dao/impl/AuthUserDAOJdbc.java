@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
-import guru.qa.niffler.data.entity.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -32,10 +32,10 @@ public class AuthUserDAOJdbc implements AuthUserDao {
         )) {
             ps.setString(1, authUser.getUsername());
             ps.setString(2, authUser.getPassword());
-            ps.setBoolean(3, authUser.isEnable());
-            ps.setBoolean(4, authUser.isAccountNonExpired());
-            ps.setBoolean(5, authUser.isAccountNonLocked());
-            ps.setBoolean(6, authUser.isCredentialsNonExpired());
+            ps.setBoolean(3, authUser.getEnabled());
+            ps.setBoolean(4, authUser.getAccountNonExpired());
+            ps.setBoolean(5, authUser.getAccountNonLocked());
+            ps.setBoolean(6, authUser.getCredentialsNonExpired());
 
             ps.executeUpdate();
 
@@ -66,7 +66,7 @@ public class AuthUserDAOJdbc implements AuthUserDao {
                     AuthUserEntity au = new AuthUserEntity();
                     au.setId(rs.getObject("id", UUID.class));
                     au.setUsername(rs.getString("username"));
-                    au.setEnable(rs.getBoolean("enabled"));
+                    au.setEnabled(rs.getBoolean("enabled"));
                     au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
                     au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
                     au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
@@ -91,7 +91,7 @@ public class AuthUserDAOJdbc implements AuthUserDao {
                     AuthUserEntity au = new AuthUserEntity();
                     au.setId(rs.getObject("id", UUID.class));
                     au.setUsername(rs.getString("username"));
-                    au.setEnable(rs.getBoolean("enabled"));
+                    au.setEnabled(rs.getBoolean("enabled"));
                     au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
                     au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
                     au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
@@ -127,7 +127,7 @@ public class AuthUserDAOJdbc implements AuthUserDao {
                     AuthUserEntity au = new AuthUserEntity();
                     au.setId(rs.getObject("id", UUID.class));
                     au.setUsername(rs.getString("username"));
-                    au.setEnable(rs.getBoolean("enabled"));
+                    au.setEnabled(rs.getBoolean("enabled"));
                     au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
                     au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
                     au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));

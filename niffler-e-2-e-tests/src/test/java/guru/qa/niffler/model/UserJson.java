@@ -1,7 +1,7 @@
 package guru.qa.niffler.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import guru.qa.niffler.data.entity.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UserEntity;
 
 import java.util.UUID;
 
@@ -34,7 +34,7 @@ public record UserJson(
                 entity.getSurname(),
                 entity.getPhoto(),
                 entity.getPhotoSmall(),
-                entity.getFullName(),
+                entity.getFullname(),
                 friendshipStatus
         );
     }

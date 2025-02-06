@@ -62,7 +62,7 @@ public class JdbcTest {
         UserJson user = usersDbClient.createUserJdbc(
                 new UserJson(
                         null,
-                        "valentin-4",
+                        "valentin-1",
                         CurrencyValues.RUB,
                         null,
                         null,

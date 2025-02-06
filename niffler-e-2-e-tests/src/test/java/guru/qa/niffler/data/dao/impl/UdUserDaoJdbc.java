@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UdUserDao;
-import guru.qa.niffler.data.entity.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
 
 import java.sql.PreparedStatement;
@@ -33,7 +33,7 @@ public class UdUserDaoJdbc implements UdUserDao {
             ps.setString(4, user.getSurname());
             ps.setBytes(5, user.getPhoto());
             ps.setBytes(6, user.getPhotoSmall());
-            ps.setString(7, user.getFullName());
+            ps.setString(7, user.getFullname());
 
             ps.executeUpdate();
 
@@ -69,7 +69,7 @@ public class UdUserDaoJdbc implements UdUserDao {
                     user.setSurname(rs.getString("surname"));
                     user.setPhoto(rs.getBytes("photo"));
                     user.setPhotoSmall(rs.getBytes("photo_small"));
-                    user.setFullName(rs.getString("full_name"));
+                    user.setFullname(rs.getString("full_name"));
                     return Optional.of(user);
                 } else {
                     return Optional.empty();
@@ -98,7 +98,7 @@ public class UdUserDaoJdbc implements UdUserDao {
                     user.setSurname(rs.getString("surname"));
                     user.setPhoto(rs.getBytes("photo"));
                     user.setPhotoSmall(rs.getBytes("photo_small"));
-                    user.setFullName(rs.getString("full_name"));
+                    user.setFullname(rs.getString("full_name"));
                     return Optional.of(user);
                 } else {
                     return Optional.empty();
@@ -137,7 +137,7 @@ public class UdUserDaoJdbc implements UdUserDao {
                     us.setSurname(rs.getString("surname"));
                     us.setPhoto(rs.getBytes("photo"));
                     us.setPhotoSmall(rs.getBytes("photo_small"));
-                    us.setFullName(rs.getString("full_name"));
+                    us.setFullname(rs.getString("full_name"));
                     user.add(us);
                 }
                 return user;
