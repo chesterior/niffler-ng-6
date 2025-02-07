@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UdUserDao;
-import guru.qa.niffler.data.entity.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.mapper.UdUserEntityRowMapper;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,7 +34,7 @@ public class UdUserDaoSpringJDBC implements UdUserDao {
             ps.setString(4, user.getSurname());
             ps.setBytes(5, user.getPhoto());
             ps.setBytes(6, user.getPhotoSmall());
-            ps.setString(7, user.getFullName());
+            ps.setString(7, user.getFullname());
             return ps;
         }, kh);
         final UUID generatedKey = (UUID) kh.getKeys().get("id");

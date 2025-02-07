@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
-import guru.qa.niffler.data.entity.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,10 +30,10 @@ public class AuthUserDaoSpringJDBC implements AuthUserDao {
                     Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getPassword());
-            ps.setBoolean(3, user.isEnable());
-            ps.setBoolean(4, user.isAccountNonExpired());
-            ps.setBoolean(5, user.isAccountNonLocked());
-            ps.setBoolean(6, user.isCredentialsNonExpired());
+            ps.setBoolean(3, user.getEnabled());
+            ps.setBoolean(4, user.getAccountNonExpired());
+            ps.setBoolean(5, user.getAccountNonLocked());
+            ps.setBoolean(6, user.getCredentialsNonExpired());
             return ps;
         }, kh);
         final UUID generatedKey = (UUID) kh.getKeys().get("id");

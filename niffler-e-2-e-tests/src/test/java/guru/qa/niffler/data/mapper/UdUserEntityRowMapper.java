@@ -1,6 +1,6 @@
 package guru.qa.niffler.data.mapper;
 
-import guru.qa.niffler.data.entity.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -26,7 +26,7 @@ public class UdUserEntityRowMapper implements RowMapper<UserEntity> {
         result.setSurname(rs.getString("surname"));
         result.setPhoto(rs.getBytes("photo"));
         result.setPhotoSmall(rs.getBytes("photo_small"));
-        result.setFullName(rs.getString("full_name"));
+        result.setFullname(rs.getString("full_name"));
         return result;
     }
 }

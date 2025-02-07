@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthorityDao;
-import guru.qa.niffler.data.entity.AuthorityEntity;
+import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthorityEntityRowMapper;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -25,7 +25,7 @@ public class AuthorityDaoSpringJDBC implements AuthorityDao {
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setObject(1, authority[i].getUserId());
+                        ps.setObject(1, authority[i].getUser().getId());
                         ps.setString(2, authority[i].getAuthority().name());
                     }
 

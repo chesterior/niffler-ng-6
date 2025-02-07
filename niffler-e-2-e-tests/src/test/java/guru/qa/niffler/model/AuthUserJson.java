@@ -1,7 +1,7 @@
 package guru.qa.niffler.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import guru.qa.niffler.data.entity.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
 import java.util.UUID;
 
@@ -26,10 +26,10 @@ public record AuthUserJson(
                 entity.getId(),
                 entity.getUsername(),
                 entity.getPassword(),
-                entity.isEnable(),
-                entity.isAccountNonExpired(),
-                entity.isAccountNonLocked(),
-                entity.isCredentialsNonExpired()
+                entity.getEnabled(),
+                entity.getAccountNonExpired(),
+                entity.getAccountNonLocked(),
+                entity.getCredentialsNonExpired()
         );
     }
 }
