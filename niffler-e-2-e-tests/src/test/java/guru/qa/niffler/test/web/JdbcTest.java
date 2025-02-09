@@ -35,25 +35,73 @@ public class JdbcTest {
         System.out.println(spend);
     }
 
-//    @Test
-//    void xaTxTest() {
-//        UsersDbClient usersDbClient = new UsersDbClient();
-//
-//        UserJson user = usersDbClient.createUser(
-//                new UserJson(
-//                        null,
-//                        "valentin",
-//                        CurrencyValues.RUB,
-//                        null,
-//                        null,
-//                        null,
-//                        null,
-//                        null,
-//                        null
-//                )
-//        );
-//        System.out.println(user);
-//    }
+    @Test
+    void addFriendRepositoryTest() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson user = usersDbClient.createUserRepository(
+                new UserJson(
+                        null,
+                        "alex-1",
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                )
+        );
+
+        UserJson user2 = usersDbClient.createUserRepository(
+                new UserJson(
+                        null,
+                        "alex-2",
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                )
+        );
+
+        usersDbClient.addFriend(user, user2);
+    }
+
+    @Test
+    void addInvitationRepositoryTest() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson user = usersDbClient.createUserRepository(
+                new UserJson(
+                        null,
+                        "alex-3",
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                )
+        );
+
+        UserJson user2 = usersDbClient.createUserRepository(
+                new UserJson(
+                        null,
+                        "alex-4",
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                )
+        );
+
+        usersDbClient.addInvitation(user, user2);
+    }
 
     @Test
     void springJdbcTest() {
