@@ -63,6 +63,7 @@ public class UdUserRepositoryHibernate implements UdUserRepository {
 
     @Override
     public void remove(UserEntity user) {
-
+        entityManager.joinTransaction();
+        entityManager.remove(user);
     }
 }

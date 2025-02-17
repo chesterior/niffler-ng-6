@@ -25,7 +25,8 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
 
     @Override
     public AuthUserEntity update(AuthUserEntity user) {
-        return null;
+        entityManager.joinTransaction();
+        return entityManager.merge(user);
     }
 
     @Override
@@ -38,7 +39,8 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
         try {
-            return Optional.of(entityManager.createQuery("select u from UserEntity u  where u.username =: username", AuthUserEntity.class)
+            return Optional.of(entityManager.createQuery("select u from UserEntity u  where u.username =: username",
+                            AuthUserEntity.class)
                     .setParameter("username", username)
                     .getSingleResult());
         } catch (NoResultException e) {
@@ -47,7 +49,8 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     }
 
     @Override
-    public void remove(AuthUserEntity authUser) {
-
+    public void remove(AuthUserEntity user) {
+        entityManager.joinTransaction();
+        entityManager.remove(user);
     }
 }

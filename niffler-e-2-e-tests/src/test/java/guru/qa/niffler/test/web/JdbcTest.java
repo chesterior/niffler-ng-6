@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Date;
 
+
 public class JdbcTest {
 
     @Test
@@ -126,7 +127,7 @@ public class JdbcTest {
     static UsersDbClient usersDbClient = new UsersDbClient();
 
     @ValueSource(strings = {
-            "valentin-11"
+            "valentin-12"
     })
     @ParameterizedTest
     void hibernateTest(String username) {

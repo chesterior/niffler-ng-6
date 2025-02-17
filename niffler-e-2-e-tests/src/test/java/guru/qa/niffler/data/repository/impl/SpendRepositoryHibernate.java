@@ -5,8 +5,8 @@ import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.repository.SpendRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,7 +32,9 @@ public class SpendRepositoryHibernate implements SpendRepository {
 
     @Override
     public CategoryEntity createCategory(CategoryEntity category) {
-        return null;
+        entityManager.joinTransaction();
+        entityManager.persist(category);
+        return category;
     }
 
     @Override
@@ -51,28 +53,35 @@ public class SpendRepositoryHibernate implements SpendRepository {
 
     @Override
     public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(String username, String name) {
-        return Optional.empty();
+        List<CategoryEntity> results = entityManager.createQuery(
+                        "SELECT c FROM CategoryEntity c WHERE c.username = :username AND c.name = :name", CategoryEntity.class)
+                .setParameter("username", username)
+                .setParameter("name", name)
+                .getResultList();
+
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
     }
 
     @Override
     public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
-        try {
-            return Optional.of(entityManager.createQuery("select s from SpendEntity s where s.username =: username",
-                            SpendEntity.class)
-                    .setParameter("username", username)
-                    .getSingleResult());
-        } catch (NoResultException e) {
-            return Optional.empty();
-        }
+        List<SpendEntity> results = entityManager.createQuery(
+                        "select s from SpendEntity s where s.username = :username AND s.description = :description", SpendEntity.class)
+                .setParameter("username", username)
+                .setParameter("description", description)
+                .getResultList();
+
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
     }
 
     @Override
     public void removeSpend(SpendEntity spend) {
-
+        entityManager.joinTransaction();
+        entityManager.remove(spend);
     }
 
     @Override
     public void removeCategory(CategoryEntity category) {
-
+        entityManager.joinTransaction();
+        entityManager.remove(category);
     }
 }
