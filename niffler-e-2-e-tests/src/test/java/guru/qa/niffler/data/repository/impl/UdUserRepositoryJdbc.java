@@ -18,7 +18,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public UserEntity createUser(UserEntity user) {
+    public UserEntity create(UserEntity user) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -78,12 +78,32 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
     }
 
     @Override
-    public void addInvitation(UserEntity requester, UserEntity addressee) {
+    public Optional<UserEntity> findByUsername(String username) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"friendship\" (requester_id, addressee_id, status, created_date) VALUES (?, ?, ?, ?)"
         )) {
             ps.setObject(1, requester.getId());
             ps.setObject(2, addressee.getId());
+            ps.setString(3, FriendshipStatus.PENDING.name());
+            ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void addOutcomeInvitation(UserEntity requester, UserEntity addressee) {
+        try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+                "INSERT INTO \"friendship\" (requester_id, addressee_id, status, created_date) VALUES (?, ?, ?, ?)"
+        )) {
+            ps.setObject(1, addressee.getId());
+            ps.setObject(2, requester.getId());
             ps.setString(3, FriendshipStatus.PENDING.name());
             ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
             ps.executeUpdate();

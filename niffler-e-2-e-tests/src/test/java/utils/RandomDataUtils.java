@@ -4,14 +4,29 @@ import com.github.javafaker.Faker;
 
 public class RandomDataUtils {
 
-    static Faker faker = new Faker();
-    public static String randomUsername = faker.name().username();
-    public static String randomName = faker.name().firstName();
-    public static String randomSurname = faker.name().lastName();
-    public static String randomCategoryName = faker.food().vegetable();
-    public static String randomPassword = faker.number().digits(5);
+    private static final Faker faker = new Faker();
+
+    public static String randomUsername() {
+        return faker.name().username();
+    }
+
+    public static String randomPassword() {
+        return faker.number().digits(5);
+    }
+
+    public static String randomName() {
+        return faker.name().firstName();
+    }
+
+    public static String randomSurname() {
+        return faker.name().lastName();
+    }
+
+    public static String randomCategoryName() {
+        return faker.food().fruit();
+    }
 
     public static String randomSentence(int wordsCount) {
-        return String.join(" ", faker.lorem().words(wordsCount));
+        return faker.lorem().sentence(wordsCount);
     }
 }

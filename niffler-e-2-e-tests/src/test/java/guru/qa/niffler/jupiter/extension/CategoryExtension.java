@@ -22,7 +22,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                         Category category = anno.categories()[0];
                         CategoryJson categoryJson = new CategoryJson(
                                 null,
-                                randomCategoryName,
+                                randomCategoryName(),
                                 anno.username(),
                                 false
                         );
