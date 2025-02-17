@@ -67,6 +67,11 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
 
     @Override
+    public AuthUserEntity update(AuthUserEntity user) {
+        return null;
+    }
+
+    @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "select * from \"user\" u join authority a on u.id = a.user_id where u.id = ?"
@@ -133,35 +138,12 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
 
     @Override
-    public void deleteById(AuthUserEntity user) {
+    public void remove(AuthUserEntity user) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM \"user\" WHERE id = ?"
         )) {
             ps.setObject(1, user.getId());
             ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<AuthUserEntity> findAll() {
-        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM \"user\"")) {
-            try (ResultSet rs = ps.executeQuery()) {
-                List<AuthUserEntity> authUsers = new ArrayList<>();
-                while (rs.next()) {
-                    AuthUserEntity au = new AuthUserEntity();
-                    au.setId(rs.getObject("id", UUID.class));
-                    au.setUsername(rs.getString("username"));
-                    au.setEnabled(rs.getBoolean("enabled"));
-                    au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
-                    au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
-                    au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
-                    authUsers.add(au);
-                }
-                return authUsers;
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

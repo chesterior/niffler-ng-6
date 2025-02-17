@@ -135,4 +135,9 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void remove(UserEntity user) {
+
+    }
 }

@@ -6,7 +6,6 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +21,11 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
         entityManager.joinTransaction();
         entityManager.persist(user);
         return user;
+    }
+
+    @Override
+    public AuthUserEntity update(AuthUserEntity user) {
+        return null;
     }
 
     @Override
@@ -43,12 +47,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     }
 
     @Override
-    public void deleteById(AuthUserEntity authUser) {
+    public void remove(AuthUserEntity authUser) {
 
-    }
-
-    @Override
-    public List<AuthUserEntity> findAll() {
-        return List.of();
     }
 }
