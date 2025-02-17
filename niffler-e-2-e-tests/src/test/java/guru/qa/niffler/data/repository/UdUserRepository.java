@@ -7,11 +7,15 @@ import java.util.UUID;
 
 public interface UdUserRepository {
 
-    UserEntity createUser(UserEntity user);
+    UserEntity create(UserEntity user);
 
     Optional<UserEntity> findById(UUID id);
 
-    void addInvitation(UserEntity requester, UserEntity addressee);
+    Optional<UserEntity> findByUsername(String username);
+
+    void addIncomeInvitation(UserEntity requester, UserEntity addressee);
+
+    void addOutcomeInvitation(UserEntity requester, UserEntity addressee);
 
     void addFriend(UserEntity requester, UserEntity addressee);
 }

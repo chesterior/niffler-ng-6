@@ -5,15 +5,16 @@ import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
-import static utils.RandomDataUtils.*;
+import static utils.RandomDataUtils.randomPassword;
+import static utils.RandomDataUtils.randomUsername;
 
 @WebTest
 public class RegistrationWebTest extends BaseTest {
 
     @Test
     void shouldRegisterNewUser() {
-        String userName = randomUsername;
-        String password = randomPassword;
+        String userName = randomUsername();
+        String password = randomPassword();
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .openRegistrationPage();
 
@@ -25,8 +26,8 @@ public class RegistrationWebTest extends BaseTest {
 
     @Test
     void shouldNotRegisterUserWithExistingUsername() {
-        String userName = randomUsername;
-        String password = randomPassword;
+        String userName = randomUsername();
+        String password = randomPassword();
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .openRegistrationPage();
@@ -43,14 +44,14 @@ public class RegistrationWebTest extends BaseTest {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .openRegistrationPage();
 
-        registerPage.signUpWithNotEqualPasswords(randomUsername, randomPassword, "456377");
+        registerPage.signUpWithNotEqualPasswords(randomUsername(), randomPassword(), "456377");
         registerPage.checkPasswordsNotEqual();
     }
 
     @Test
     void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .successLogin(randomUsername, randomPassword);
+                .successLogin(randomUsername(), randomPassword());
 
         loginPage.checkBadCredentials();
         loginPage.checkHeaderLogin();

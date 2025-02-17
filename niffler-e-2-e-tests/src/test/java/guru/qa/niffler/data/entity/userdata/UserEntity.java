@@ -97,7 +97,7 @@ public class UserEntity implements Serializable {
         }
     }
 
-    public static UserEntity fromJson(UserJson json) {
+    public static UserEntity  fromJson(UserJson json) {
         UserEntity us = new UserEntity();
         us.setId(json.id());
         us.setUsername(json.username());
