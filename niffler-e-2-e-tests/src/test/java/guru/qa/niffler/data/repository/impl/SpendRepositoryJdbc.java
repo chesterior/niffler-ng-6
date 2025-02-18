@@ -72,7 +72,6 @@ public class SpendRepositoryJdbc implements SpendRepository {
             ps.setString(1, category.getUsername());
             ps.setString(2, category.getName());
             ps.setBoolean(3, category.isArchived());
-
             ps.executeUpdate();
 
             final UUID generatedKeys;

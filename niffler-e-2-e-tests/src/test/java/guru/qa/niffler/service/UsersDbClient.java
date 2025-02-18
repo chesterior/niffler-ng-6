@@ -29,7 +29,7 @@ import java.util.Arrays;
 import static guru.qa.niffler.data.tpl.DataSources.dataSource;
 import static utils.RandomDataUtils.randomUsername;
 
-public class UsersDbClient {
+public class UsersDbClient implements UsersClient{
 
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -237,6 +237,7 @@ public class UsersDbClient {
 
 
     //RepositoryHibernate
+    @Override
     public UserJson createUserRepositoryHibernate(String username, String password) {
         return xaTransactionTemplate.execute(() -> {
                     AuthUserEntity authUser = authUserEntity(username, password);
@@ -249,6 +250,7 @@ public class UsersDbClient {
         );
     }
 
+    @Override
     public void addFriendHibernate(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = udUserRepositoryHibernate.findById(
@@ -267,6 +269,7 @@ public class UsersDbClient {
         }
     }
 
+    @Override
     public void addIncomeInvitationHibernate(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = udUserRepositoryHibernate.findById(
@@ -285,6 +288,7 @@ public class UsersDbClient {
         }
     }
 
+    @Override
     public void addOutcomeInvitationHibernate(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = udUserRepositoryHibernate.findById(

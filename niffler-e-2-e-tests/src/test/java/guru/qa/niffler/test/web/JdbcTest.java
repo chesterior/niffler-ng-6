@@ -19,13 +19,13 @@ public class JdbcTest {
     void txTest() {
         SpendDbClient spendDbClient = new SpendDbClient();
 
-        spendDbClient.createSpend(
+        spendDbClient.createSpendRepositoryHibernate(
                 new SpendJson(
                         null,
                         new Date(),
                         new CategoryJson(
                                 null,
-                                "testName-5",
+                                "testName-3",
                                 "duck",
                                 false
                         ),
@@ -127,7 +127,7 @@ public class JdbcTest {
     static UsersDbClient usersDbClient = new UsersDbClient();
 
     @ValueSource(strings = {
-            "valentin-12"
+            "valentin-1"
     })
     @ParameterizedTest
     void hibernateTest(String username) {

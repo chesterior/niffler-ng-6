@@ -1,24 +1,24 @@
-package guru.qa.niffler.data.dao.impl;
+package guru.qa.niffler.data.repository.impl;
 
-import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
-import guru.qa.niffler.data.tpl.DataSources;
+import guru.qa.niffler.data.repository.AuthUserRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AuthUserDaoSpringJDBC implements AuthUserDao {
+public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
-    private static final Config CFG = Config.getInstance();
-    JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+    private final JdbcTemplate jdbcTemplate;
+
+    public AuthUserRepositorySpringJdbc(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
@@ -42,6 +42,26 @@ public class AuthUserDaoSpringJDBC implements AuthUserDao {
     }
 
     @Override
+    public AuthUserEntity update(AuthUserEntity user) {
+        int rows = jdbcTemplate.update(
+                "UPDATE \"user\" SET username = ?, password = ?, enabled = ?, account_non_expired = ?, " +
+                        "account_non_locked = ?, credentials_non_expired = ? WHERE id = ?",
+                user.getUsername(),
+                user.getPassword(),
+                user.getEnabled(),
+                user.getAccountNonExpired(),
+                user.getAccountNonLocked(),
+                user.getCredentialsNonExpired(),
+                user.getId()
+        );
+        if (rows == 1) {
+            return user;
+        } else {
+            throw new RuntimeException("Update failed for user with id: " + user.getId());
+        }
+    }
+
+    @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
@@ -62,14 +82,9 @@ public class AuthUserDaoSpringJDBC implements AuthUserDao {
     }
 
     @Override
-    public void deleteById(AuthUserEntity authUser) {
+    public void remove(AuthUserEntity authUser) {
         jdbcTemplate.update(
                 "DELETE FROM \"user\" WHERE id =?", authUser.getId()
         );
-    }
-
-    @Override
-    public List<AuthUserEntity> findAll() {
-        return jdbcTemplate.query("SELECT * FROM \"user\"", AuthUserEntityRowMapper.instance);
     }
 }
