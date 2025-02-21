@@ -17,7 +17,7 @@ import java.util.UUID;
 public class AuthorityDaoSpringJDBC implements AuthorityDao {
 
     private static final Config CFG = Config.getInstance();
-    JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
 
     @Override
     public void create(AuthorityEntity... authority) {

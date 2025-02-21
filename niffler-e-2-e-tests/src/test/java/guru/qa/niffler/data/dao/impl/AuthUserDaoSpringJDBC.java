@@ -18,7 +18,7 @@ import java.util.UUID;
 public class AuthUserDaoSpringJDBC implements AuthUserDao {
 
     private static final Config CFG = Config.getInstance();
-    JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
 
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
