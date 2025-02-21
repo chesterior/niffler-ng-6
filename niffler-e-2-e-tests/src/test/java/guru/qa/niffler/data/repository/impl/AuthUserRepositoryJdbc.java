@@ -6,8 +6,6 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.repository.AuthUserRepository;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,8 +21,6 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
     private static final Config CFG = Config.getInstance();
-
-    private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     @Override
     public AuthUserEntity create(AuthUserEntity authUser) {
@@ -61,6 +57,24 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
             }
             authorityPs.executeBatch();
             return authUser;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public AuthUserEntity update(AuthUserEntity user) {
+        try (PreparedStatement userPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+                "UPDATE \"user\" SET username = ?, password = ?, enabled = ?, account_non_expired = ?, " +
+                        "account_non_locked = ?, credentials_non_expired = ?")) {
+            userPs.setString(1, user.getUsername());
+            userPs.setString(2, user.getPassword());
+            userPs.setBoolean(3, user.getEnabled());
+            userPs.setBoolean(4, user.getAccountNonExpired());
+            userPs.setBoolean(5, user.getAccountNonLocked());
+            userPs.setBoolean(6, user.getCredentialsNonExpired());
+            userPs.executeUpdate();
+            return user;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -133,35 +147,12 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
 
     @Override
-    public void deleteById(AuthUserEntity user) {
+    public void remove(AuthUserEntity user) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM \"user\" WHERE id = ?"
         )) {
             ps.setObject(1, user.getId());
             ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<AuthUserEntity> findAll() {
-        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM \"user\"")) {
-            try (ResultSet rs = ps.executeQuery()) {
-                List<AuthUserEntity> authUsers = new ArrayList<>();
-                while (rs.next()) {
-                    AuthUserEntity au = new AuthUserEntity();
-                    au.setId(rs.getObject("id", UUID.class));
-                    au.setUsername(rs.getString("username"));
-                    au.setEnabled(rs.getBoolean("enabled"));
-                    au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
-                    au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
-                    au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
-                    authUsers.add(au);
-                }
-                return authUsers;
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

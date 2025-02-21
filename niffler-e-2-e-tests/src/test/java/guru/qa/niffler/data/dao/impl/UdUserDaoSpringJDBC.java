@@ -18,10 +18,10 @@ import java.util.UUID;
 public class UdUserDaoSpringJDBC implements UdUserDao {
 
     private static final Config CFG = Config.getInstance();
+    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
 
     @Override
     public UserEntity create(UserEntity user) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
         KeyHolder kh = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
@@ -44,7 +44,6 @@ public class UdUserDaoSpringJDBC implements UdUserDao {
 
     @Override
     public Optional<UserEntity> findById(UUID id) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
                         "SELECT * FROM \"user\" WHERE id =?",
@@ -55,7 +54,6 @@ public class UdUserDaoSpringJDBC implements UdUserDao {
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
                         "SELECT * FROM \"user\" WHERE username =?",
@@ -66,7 +64,6 @@ public class UdUserDaoSpringJDBC implements UdUserDao {
 
     @Override
     public void delete(UserEntity user) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
         jdbcTemplate.update(
                 "DELETE FROM \"user\" WHERE id =?", user.getId()
         );
@@ -74,7 +71,6 @@ public class UdUserDaoSpringJDBC implements UdUserDao {
 
     @Override
     public List<UserEntity> findAll() {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
         return jdbcTemplate.query("SELECT * FROM \"user\"", UdUserEntityRowMapper.instance);
     }
 }

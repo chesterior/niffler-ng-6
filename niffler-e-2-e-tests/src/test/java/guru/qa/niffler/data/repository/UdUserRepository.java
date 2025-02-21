@@ -18,4 +18,6 @@ public interface UdUserRepository {
     void addOutcomeInvitation(UserEntity requester, UserEntity addressee);
 
     void addFriend(UserEntity requester, UserEntity addressee);
+
+    void remove(UserEntity user);
 }

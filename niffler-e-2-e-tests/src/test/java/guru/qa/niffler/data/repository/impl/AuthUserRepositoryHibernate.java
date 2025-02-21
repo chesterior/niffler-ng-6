@@ -6,7 +6,6 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,6 +24,12 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     }
 
     @Override
+    public AuthUserEntity update(AuthUserEntity user) {
+        entityManager.joinTransaction();
+        return entityManager.merge(user);
+    }
+
+    @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         return Optional.ofNullable(
                 entityManager.find(AuthUserEntity.class, id)
@@ -34,7 +39,8 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
         try {
-            return Optional.of(entityManager.createQuery("select u from UserEntity u  where u.username =: username", AuthUserEntity.class)
+            return Optional.of(entityManager.createQuery("select u from UserEntity u  where u.username =: username",
+                            AuthUserEntity.class)
                     .setParameter("username", username)
                     .getSingleResult());
         } catch (NoResultException e) {
@@ -43,12 +49,8 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     }
 
     @Override
-    public void deleteById(AuthUserEntity authUser) {
-
-    }
-
-    @Override
-    public List<AuthUserEntity> findAll() {
-        return List.of();
+    public void remove(AuthUserEntity user) {
+        entityManager.joinTransaction();
+        entityManager.remove(user);
     }
 }
