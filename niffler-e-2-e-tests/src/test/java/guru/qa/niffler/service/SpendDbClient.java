@@ -7,6 +7,7 @@ import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.dao.impl.SpendDaoJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
+import guru.qa.niffler.data.repository.SpendRepository;
 import guru.qa.niffler.data.repository.impl.SpendRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.SpendRepositoryJdbc;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
@@ -26,10 +27,10 @@ public class SpendDbClient implements SpendClient {
     private final SpendDao spendDao = new SpendDaoJdbc();
 
     //RepositoryJdbc
-    private final SpendRepositoryJdbc spendRepositoryJdbc = new SpendRepositoryJdbc();
+    private final SpendRepository spendRepositoryJdbc = new SpendRepositoryJdbc();
 
     //RepositoryHibernate
-    private final SpendRepositoryHibernate spendRepositoryHibernate = new SpendRepositoryHibernate();
+    private final SpendRepository spendRepositoryHibernate = new SpendRepositoryHibernate();
 
     private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(
             CFG.spendJdbcUrl()

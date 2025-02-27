@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -19,20 +20,27 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
 
     private static final Config CFG = Config.getInstance();
     private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
+    private final String url = CFG.spendJdbcUrl();
 
+    @Nonnull
     @Override
     public CategoryEntity create(CategoryEntity category) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(url));
         KeyHolder kh = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO category (username, name, archived) VALUES (?, ?, ? )",
-                    Statement.RETURN_GENERATED_KEYS);
+                    """
+                            INSERT INTO category (username, name, archived)
+                            VALUES (?, ?, ?)
+                        """,
+                    Statement.RETURN_GENERATED_KEYS
+            );
             ps.setString(1, category.getUsername());
             ps.setString(2, category.getName());
             ps.setBoolean(3, category.isArchived());
-            ps.executeUpdate();
             return ps;
         }, kh);
+
         final UUID generatedKey = (UUID) kh.getKeys().get("id");
         category.setId(generatedKey);
         return category;

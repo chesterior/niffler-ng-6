@@ -1,14 +1,19 @@
 package guru.qa.niffler.data.repository.impl;
 
+import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.CategoryDao;
+import guru.qa.niffler.data.dao.impl.CategoryDaoSpringJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.mapper.CategoryEntityRowMapper;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
+import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -17,11 +22,10 @@ import java.util.UUID;
 
 public class SpendRepositorySpringJdbc implements SpendRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final Config CFG = Config.getInstance();
+    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
 
-    public SpendRepositorySpringJdbc(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final CategoryDao categoryDao = new CategoryDaoSpringJdbc();
 
     @Override
     public SpendEntity create(SpendEntity spend) {
@@ -64,22 +68,10 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
         }
     }
 
+    @Nonnull
     @Override
     public CategoryEntity createCategory(CategoryEntity category) {
-        KeyHolder kh = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO category (username, name, archived) VALUES (?, ?, ? )",
-                    Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, category.getUsername());
-            ps.setString(2, category.getName());
-            ps.setBoolean(3, category.isArchived());
-            ps.executeUpdate();
-            return ps;
-        }, kh);
-        final UUID generatedKey = (UUID) kh.getKeys().get("id");
-        category.setId(generatedKey);
-        return category;
+        return categoryDao.create(category);
     }
 
     @Override

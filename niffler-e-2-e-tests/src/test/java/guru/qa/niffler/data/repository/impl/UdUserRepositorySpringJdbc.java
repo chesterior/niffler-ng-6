@@ -1,15 +1,16 @@
 package guru.qa.niffler.data.repository.impl;
 
+import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.UdUserDao;
+import guru.qa.niffler.data.dao.impl.UdUserDaoSpringJDBC;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.mapper.UdUserEntityRowMapper;
 import guru.qa.niffler.data.repository.UdUserRepository;
+import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import javax.annotation.Nonnull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -19,32 +20,15 @@ import java.util.UUID;
 
 public class UdUserRepositorySpringJdbc implements UdUserRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final Config CFG = Config.getInstance();
+    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
+    private final UdUserDao userdataUserDao = new UdUserDaoSpringJDBC();
 
-    public UdUserRepositorySpringJdbc(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
+    @Nonnull
     @Override
     public UserEntity create(UserEntity user) {
-        KeyHolder kh = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name)" +
-                            "VALUES (?, ?, ?, ?, ?, ?,?)",
-                    Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, user.getUsername());
-            ps.setString(2, user.getCurrency().name());
-            ps.setString(3, user.getFirstname());
-            ps.setString(4, user.getSurname());
-            ps.setBytes(5, user.getPhoto());
-            ps.setBytes(6, user.getPhotoSmall());
-            ps.setString(7, user.getFullname());
-            return ps;
-        }, kh);
-        final UUID generatedKey = (UUID) kh.getKeys().get("id");
-        user.setId(generatedKey);
-        return user;
+        return userdataUserDao.create(user);
     }
 
     @Override
