@@ -23,7 +23,7 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
                 .ifPresent(user -> {
                     if ("".equals(user.username())) {
                         final String username = RandomDataUtils.randomUsername();
-                        UserJson testUser = usersClient.createUserRepositoryHibernate(username, defaultPassword);
+                        UserJson testUser = usersClient.createUser(username, defaultPassword);
                         context.getStore(NAMESPACE).put(
                                 context.getUniqueId(),
                                 testUser.addTestData(

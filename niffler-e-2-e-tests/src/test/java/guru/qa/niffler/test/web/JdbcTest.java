@@ -19,7 +19,7 @@ public class JdbcTest {
     void txTest() {
         SpendDbClient spendDbClient = new SpendDbClient();
 
-        spendDbClient.createSpendRepositoryHibernate(
+        spendDbClient.createSpend(
                 new SpendJson(
                         null,
                         new Date(),
@@ -37,98 +37,6 @@ public class JdbcTest {
         );
     }
 
-    @Test
-    void addFriendRepositoryTest() {
-        UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson user = usersDbClient.createUserRepository(
-                new UserJson(
-                        null,
-                        "alex-1",
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                )
-        );
-
-        UserJson user2 = usersDbClient.createUserRepository(
-                new UserJson(
-                        null,
-                        "alex-2",
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                )
-        );
-
-        usersDbClient.addFriend(user, user2);
-    }
-
-    @Test
-    void addInvitationRepositoryTest() {
-        UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson user = usersDbClient.createUserRepository(
-                new UserJson(
-                        null,
-                        "alex-3",
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                )
-        );
-
-        UserJson user2 = usersDbClient.createUserRepository(
-                new UserJson(
-                        null,
-                        "alex-4",
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                )
-        );
-
-        usersDbClient.addIncomeInvitation(user, user2);
-    }
-
-    @Test
-    void springJdbcTest() {
-        UsersDbClient usersDbClient = new UsersDbClient();
-
-        usersDbClient.createUserRepository(
-                new UserJson(
-                        null,
-                        "valentin-2",
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                )
-        );
-    }
-
     static UsersDbClient usersDbClient = new UsersDbClient();
 
     @ValueSource(strings = {
@@ -136,12 +44,12 @@ public class JdbcTest {
     })
     @ParameterizedTest
     void hibernateTest(String username) {
-        UserJson user = usersDbClient.createUserRepositoryHibernate(
+        UserJson user = usersDbClient.createUser(
                 username,
                 "12345"
         );
-        usersDbClient.addIncomeInvitationHibernate(user, 1);
-        usersDbClient.addOutcomeInvitationHibernate(user, 1);
-        usersDbClient.addFriendHibernate(user, 1);
+        usersDbClient.addIncomeInvitation(user, 1);
+        usersDbClient.addOutcomeInvitation(user, 1);
+        usersDbClient.addFriend(user, 1);
     }
 }

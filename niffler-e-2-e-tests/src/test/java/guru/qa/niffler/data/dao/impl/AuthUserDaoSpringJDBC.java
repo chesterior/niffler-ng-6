@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -20,6 +21,7 @@ public class AuthUserDaoSpringJDBC implements AuthUserDao {
     private static final Config CFG = Config.getInstance();
     private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
 
+    @Nonnull
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
         KeyHolder kh = new GeneratedKeyHolder();
@@ -41,6 +43,7 @@ public class AuthUserDaoSpringJDBC implements AuthUserDao {
         return user;
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         return Optional.ofNullable(
@@ -51,6 +54,7 @@ public class AuthUserDaoSpringJDBC implements AuthUserDao {
         );
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
         return Optional.ofNullable(
@@ -62,12 +66,13 @@ public class AuthUserDaoSpringJDBC implements AuthUserDao {
     }
 
     @Override
-    public void deleteById(AuthUserEntity authUser) {
+    public void remove(AuthUserEntity authUser) {
         jdbcTemplate.update(
                 "DELETE FROM \"user\" WHERE id =?", authUser.getId()
         );
     }
 
+    @Nonnull
     @Override
     public List<AuthUserEntity> findAll() {
         return jdbcTemplate.query("SELECT * FROM \"user\"", AuthUserEntityRowMapper.instance);

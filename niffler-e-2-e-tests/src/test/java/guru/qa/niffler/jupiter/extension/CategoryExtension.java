@@ -42,7 +42,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver 
                                     category.archived()
                             );
 
-                            CategoryJson createdCategory = spendClient.createCategoryRepositoryHibernate(categoryJson);
+                            CategoryJson createdCategory = spendClient.createCategory(categoryJson);
                             result.add(createdCategory);
                         }
                         if (user != null) {

@@ -8,6 +8,7 @@ import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -37,6 +38,7 @@ public class AuthorityDaoSpringJDBC implements AuthorityDao {
         );
     }
 
+    @Nonnull
     @Override
     public Optional<AuthorityEntity> findById(UUID id) {
         return Optional.ofNullable(
@@ -47,6 +49,7 @@ public class AuthorityDaoSpringJDBC implements AuthorityDao {
         );
     }
 
+    @Nonnull
     @Override
     public Optional<AuthorityEntity> findByUserId(UUID username) {
         return Optional.ofNullable(
@@ -58,12 +61,13 @@ public class AuthorityDaoSpringJDBC implements AuthorityDao {
     }
 
     @Override
-    public void deleteById(AuthorityEntity authAuthority) {
+    public void remove(AuthorityEntity authAuthority) {
         jdbcTemplate.update(
                 "DELETE FROM authority WHERE id =?", authAuthority.getId()
         );
     }
 
+    @Nonnull
     @Override
     public List<AuthorityEntity> findAll() {
         return jdbcTemplate.query("SELECT * FROM authority", AuthorityEntityRowMapper.instance);

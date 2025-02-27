@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
         }
     }
 
+    @Nonnull
     @Override
     public Optional<AuthorityEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
@@ -60,6 +62,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
         }
     }
 
+    @Nonnull
     @Override
     public Optional<AuthorityEntity> findByUserId(UUID username) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
@@ -83,7 +86,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
     }
 
     @Override
-    public void deleteById(AuthorityEntity user) {
+    public void remove(AuthorityEntity user) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM authority WHERE id = ?"
         )) {
@@ -94,6 +97,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
         }
     }
 
+    @Nonnull
     @Override
     public List<AuthorityEntity> findAll() {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(

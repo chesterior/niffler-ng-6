@@ -8,21 +8,21 @@ import java.util.UUID;
 
 public interface SpendClient {
 
-    SpendJson createSpendRepositoryHibernate(SpendJson spend);
+    SpendJson createSpend(SpendJson spend);
 
-    SpendJson updateSpendRepositoryHibernate(SpendJson spend);
+    SpendJson updateSpend(SpendJson spend);
 
-    Optional<SpendJson> findSpendByIdRepositoryHibernate(UUID id);
+    Optional<SpendJson> findSpendById(UUID id);
 
-    Optional<SpendJson> findByUsernameAndSpendDescriptionRepositoryHibernate(String username, String description);
+    Optional<SpendJson> findByUsernameAndSpendDescription(String username, String description);
 
-    void removeSpendRepositoryHibernate(SpendJson spend);
+    void removeSpend(SpendJson spend);
 
-    CategoryJson createCategoryRepositoryHibernate(CategoryJson category);
+    CategoryJson createCategory(CategoryJson category);
 
-    Optional<CategoryJson> findCategoryByIdRepositoryHibernate(UUID id);
+    Optional<CategoryJson> findCategoryById(UUID id);
 
-    Optional<CategoryJson> findCategoryByUsernameAndSpendNameRepositoryHibernate(String username, String name);
+    Optional<CategoryJson> findCategoryByUsernameAndCategoryName(String username, String name);
 
-    void removeCategoryRepositoryHibernate(CategoryJson category);
+    void removeCategory(CategoryJson category);
 }

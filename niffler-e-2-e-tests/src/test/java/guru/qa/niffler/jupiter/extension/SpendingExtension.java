@@ -48,7 +48,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                                     user != null ? user.username() : userAnno.username()
                             );
 
-                            SpendJson createdSpend = spendClient.createSpendRepositoryHibernate(spend);
+                            SpendJson createdSpend = spendClient.createSpend(spend);
                             result.add(createdSpend);
                         }
 

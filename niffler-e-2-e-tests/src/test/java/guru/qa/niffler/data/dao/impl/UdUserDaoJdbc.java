@@ -53,6 +53,11 @@ public class UdUserDaoJdbc implements UdUserDao {
     }
 
     @Override
+    public UserEntity update(UserEntity user) {
+        return null;
+    }
+
+    @Override
     public Optional<UserEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM \"user\" WHERE id = ?"
@@ -110,7 +115,7 @@ public class UdUserDaoJdbc implements UdUserDao {
     }
 
     @Override
-    public void delete(UserEntity user) {
+    public void remove(UserEntity user) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM \"user\" WHERE id = ?"
         )) {
