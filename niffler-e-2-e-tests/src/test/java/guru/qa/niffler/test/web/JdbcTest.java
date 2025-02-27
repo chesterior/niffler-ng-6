@@ -50,6 +50,7 @@ public class JdbcTest {
                         null,
                         null,
                         null,
+                        null,
                         null
                 )
         );
@@ -59,6 +60,7 @@ public class JdbcTest {
                         null,
                         "alex-2",
                         CurrencyValues.RUB,
+                        null,
                         null,
                         null,
                         null,
@@ -84,6 +86,7 @@ public class JdbcTest {
                         null,
                         null,
                         null,
+                        null,
                         null
                 )
         );
@@ -93,6 +96,7 @@ public class JdbcTest {
                         null,
                         "alex-4",
                         CurrencyValues.RUB,
+                        null,
                         null,
                         null,
                         null,
@@ -114,6 +118,7 @@ public class JdbcTest {
                         null,
                         "valentin-2",
                         CurrencyValues.RUB,
+                        null,
                         null,
                         null,
                         null,

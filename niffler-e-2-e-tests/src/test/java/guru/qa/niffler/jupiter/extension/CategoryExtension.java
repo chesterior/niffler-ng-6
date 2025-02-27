@@ -15,7 +15,7 @@ import java.util.List;
 
 import static utils.RandomDataUtils.randomCategoryName;
 
-public class CategoryExtension implements BeforeEachCallback, ParameterResolver, AfterTestExecutionCallback {
+public class CategoryExtension implements BeforeEachCallback, ParameterResolver {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CategoryExtension.class);
     private final SpendClient spendClient = new SpendDbClient();
@@ -26,6 +26,10 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                 .ifPresent(userAnno -> {
                     if (ArrayUtils.isNotEmpty(userAnno.categories())) {
                         List<CategoryJson> result = new ArrayList<>();
+
+                        UserJson user = context.getStore(UserExtension.NAMESPACE)
+                                .get(context.getUniqueId(), UserJson.class);
+
                         for (Category category : userAnno.categories()) {
                             final String categoryName = "".equals(category.name())
                                     ? randomCategoryName()
@@ -34,16 +38,13 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                             CategoryJson categoryJson = new CategoryJson(
                                     null,
                                     categoryName,
-                                    userAnno.username(),
+                                    user != null ? user.username() : userAnno.username(),
                                     category.archived()
                             );
 
                             CategoryJson createdCategory = spendClient.createCategoryRepositoryHibernate(categoryJson);
                             result.add(createdCategory);
                         }
-
-                        UserJson user = context.getStore(UserExtension.NAMESPACE)
-                                .get(context.getUniqueId(), UserJson.class);
                         if (user != null) {
                             user.testData().categories().addAll(result);
                         } else {
@@ -54,20 +55,6 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                         }
                     }
                 });
-    }
-
-    @Override
-    public void afterTestExecution(ExtensionContext context) {
-        UserJson user = context.getStore(UserExtension.NAMESPACE)
-                .get(context.getUniqueId(), UserJson.class);
-
-        List<CategoryJson> categories = user != null
-                ? user.testData().categories()
-                : context.getStore(CategoryExtension.NAMESPACE).get(context.getUniqueId(), List.class);
-
-        for (CategoryJson category : categories) {
-            spendClient.removeCategoryRepositoryHibernate(category);
-        }
     }
 
     @Override

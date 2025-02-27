@@ -28,6 +28,10 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                 .ifPresent(userAnno -> {
                     if (ArrayUtils.isNotEmpty(userAnno.spendings())) {
                         List<SpendJson> result = new ArrayList<>();
+
+                        UserJson user = context.getStore(UserExtension.NAMESPACE)
+                                .get(context.getUniqueId(), UserJson.class);
+
                         for (Spending spendAnno : userAnno.spendings()) {
                             SpendJson spend = new SpendJson(
                                     null,
@@ -35,21 +39,19 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                                     new CategoryJson(
                                             null,
                                             spendAnno.category(),
-                                            userAnno.username(),
+                                            user != null ? user.username() : userAnno.username(),
                                             false
                                     ),
                                     CurrencyValues.RUB,
                                     spendAnno.amount(),
                                     spendAnno.description(),
-                                    userAnno.username()
+                                    user != null ? user.username() : userAnno.username()
                             );
 
                             SpendJson createdSpend = spendClient.createSpendRepositoryHibernate(spend);
                             result.add(createdSpend);
                         }
 
-                        UserJson user = context.getStore(UserExtension.NAMESPACE)
-                                .get(context.getUniqueId(), UserJson.class);
                         if (user != null) {
                             user.testData().spending().addAll(result);
                         } else {
