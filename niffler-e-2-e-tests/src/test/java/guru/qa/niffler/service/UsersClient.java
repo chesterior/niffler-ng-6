@@ -4,11 +4,11 @@ import guru.qa.niffler.model.UserJson;
 
 public interface UsersClient {
 
-    UserJson createUserRepositoryHibernate(String username, String password);
+    UserJson createUser(String username, String password);
 
-    void addIncomeInvitationHibernate(UserJson targetUser, int count);
+    void addIncomeInvitation(UserJson targetUser, int count);
 
-    void addOutcomeInvitationHibernate(UserJson targetUser, int count);
+    void addOutcomeInvitation(UserJson targetUser, int count);
 
-    void addFriendHibernate(UserJson targetUser, int count);
+    void addFriend(UserJson targetUser, int count);
 }

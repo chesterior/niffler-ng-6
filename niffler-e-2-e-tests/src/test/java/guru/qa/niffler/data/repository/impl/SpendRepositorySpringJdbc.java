@@ -1,138 +1,105 @@
 package guru.qa.niffler.data.repository.impl;
 
+import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.CategoryDao;
+import guru.qa.niffler.data.dao.SpendDao;
+import guru.qa.niffler.data.dao.impl.CategoryDaoSpringJdbc;
+import guru.qa.niffler.data.dao.impl.SpendDaoSpringJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.mapper.CategoryEntityRowMapper;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
+import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 
 public class SpendRepositorySpringJdbc implements SpendRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final Config CFG = Config.getInstance();
 
-    public SpendRepositorySpringJdbc(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final String url = CFG.spendJdbcUrl();
+    private final SpendDao spendDao = new SpendDaoSpringJdbc();
+    private final CategoryDao categoryDao = new CategoryDaoSpringJdbc();
 
+    @Nonnull
     @Override
     public SpendEntity create(SpendEntity spend) {
-        KeyHolder kh = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO spend (username, spend_date, currency, amount, description, category_id) " +
-                            "VALUES (?, ?, ?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, spend.getUsername());
-            ps.setDate(2, new Date(spend.getSpendDate().getTime()));
-            ps.setString(3, spend.getCurrency().name());
-            ps.setDouble(4, spend.getAmount());
-            ps.setString(5, spend.getDescription());
-            ps.setObject(6, spend.getCategory().getId());
-            ps.executeUpdate();
-            return ps;
-        }, kh);
-        final UUID generatedKey = (UUID) kh.getKeys().get("id");
-        spend.setId(generatedKey);
+        final UUID categoryId = spend.getCategory().getId();
+        if (categoryId == null || categoryDao.findCategoryById(categoryId).isEmpty()) {
+            spend.setCategory(
+                    categoryDao.create(spend.getCategory())
+            );
+        }
+        return spendDao.create(spend);
+    }
+
+    @Nonnull
+    @Override
+    public SpendEntity update(SpendEntity spend) {
+        spendDao.update(spend);
+        categoryDao.update(spend.getCategory());
         return spend;
     }
 
-    @Override
-    public SpendEntity update(SpendEntity spend) {
-        int rows = jdbcTemplate.update(
-                "UPDATE spend SET username = ?, spend_date = ?, currency = ?, amount = ?, description = ?, category_id = ? WHERE id = ?",
-                spend.getUsername(),
-                new Date(spend.getSpendDate().getTime()),
-                spend.getCurrency().name(),
-                spend.getAmount(),
-                spend.getDescription(),
-                spend.getCategory().getId(),
-                spend.getId()
-        );
-        if (rows == 1) {
-            return spend;
-        } else {
-            throw new RuntimeException("Update failed for spend with id: " + spend.getId());
-        }
-    }
-
+    @Nonnull
     @Override
     public CategoryEntity createCategory(CategoryEntity category) {
-        KeyHolder kh = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO category (username, name, archived) VALUES (?, ?, ? )",
-                    Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, category.getUsername());
-            ps.setString(2, category.getName());
-            ps.setBoolean(3, category.isArchived());
-            ps.executeUpdate();
-            return ps;
-        }, kh);
-        final UUID generatedKey = (UUID) kh.getKeys().get("id");
-        category.setId(generatedKey);
-        return category;
+        return categoryDao.create(category);
     }
 
+    @Nonnull
     @Override
     public Optional<CategoryEntity> findCategoryById(UUID id) {
-        return Optional.ofNullable(
-                jdbcTemplate.queryForObject(
-                        "SELECT * FROM category WHERE id =?",
-                        CategoryEntityRowMapper.instance, id
-                )
-        );
+        return categoryDao.findCategoryById(id);
     }
 
+    @Nonnull
     @Override
-    public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(String username, String name) {
+    public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(url));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
-                        "SELECT * FROM category WHERE username = ? AND name = ?",
-                        CategoryEntityRowMapper.instance, username, name
+                        "SELECT * FROM category WHERE username = ? and name = ?",
+                        CategoryEntityRowMapper.instance,
+                        username,
+                        name
                 )
         );
     }
 
+    @Nonnull
     @Override
     public Optional<SpendEntity> findSpendById(UUID id) {
-        return Optional.ofNullable(
-                jdbcTemplate.queryForObject(
-                        "SELECT * FROM spend WHERE id =?",
-                        SpendEntityRowMapper.instance, id
-                )
-        );
+        return spendDao.findSpendById(id);
     }
 
+    @Nonnull
     @Override
     public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(url));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
-                        "SELECT * FROM spend WHERE  username = ? and description = ?",
-                        SpendEntityRowMapper.instance, username, description
+                        "SELECT * FROM spend WHERE username = ? and description = ?",
+                        SpendEntityRowMapper.instance,
+                        username,
+                        description
                 )
         );
     }
 
     @Override
     public void removeSpend(SpendEntity spend) {
-        jdbcTemplate.update(
-                "DELETE FROM spend WHERE id =?", spend.getId()
-        );
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(url));
+        jdbcTemplate.update("DELETE FROM spend WHERE id = ?", spend.getId());
     }
 
     @Override
     public void removeCategory(CategoryEntity category) {
-        jdbcTemplate.update(
-                "DELETE FROM category WHERE id =?", category.getId()
-        );
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(url));
+        jdbcTemplate.update("DELETE FROM category WHERE id = ?", category.getId());
     }
 }

@@ -44,6 +44,11 @@ public class SpendDaoSpringJdbc implements SpendDao {
     }
 
     @Override
+    public SpendEntity update(SpendEntity entity) {
+        return null;
+    }
+
+    @Override
     public Optional<SpendEntity> findSpendById(UUID id) {
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
@@ -62,7 +67,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     }
 
     @Override
-    public void deleteSpend(SpendEntity spend) {
+    public void remove(SpendEntity spend) {
         jdbcTemplate.update(
                 "DELETE FROM spend WHERE id =?", spend.getId()
         );

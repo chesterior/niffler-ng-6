@@ -6,6 +6,7 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     private static final Config CFG = Config.getInstance();
     private final EntityManager entityManager = em(CFG.authJdbcUrl());
 
+    @Nonnull
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
         entityManager.joinTransaction();
@@ -23,12 +25,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
         return user;
     }
 
-    @Override
-    public AuthUserEntity update(AuthUserEntity user) {
-        entityManager.joinTransaction();
-        return entityManager.merge(user);
-    }
-
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         return Optional.ofNullable(
@@ -36,6 +33,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
         );
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
         try {

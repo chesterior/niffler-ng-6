@@ -43,6 +43,11 @@ public class UdUserDaoSpringJDBC implements UdUserDao {
     }
 
     @Override
+    public UserEntity update(UserEntity user) {
+        return null;
+    }
+
+    @Override
     public Optional<UserEntity> findById(UUID id) {
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
@@ -63,7 +68,7 @@ public class UdUserDaoSpringJDBC implements UdUserDao {
     }
 
     @Override
-    public void delete(UserEntity user) {
+    public void remove(UserEntity user) {
         jdbcTemplate.update(
                 "DELETE FROM \"user\" WHERE id =?", user.getId()
         );

@@ -14,7 +14,7 @@ public interface AuthorityDao {
 
     Optional<AuthorityEntity> findByUserId(UUID username);
 
-    void deleteById(AuthorityEntity authAuthority);
+    void remove(AuthorityEntity authAuthority);
 
     List<AuthorityEntity> findAll();
 }

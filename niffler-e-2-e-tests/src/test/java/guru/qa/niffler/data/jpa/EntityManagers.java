@@ -8,6 +8,7 @@ import jakarta.persistence.Persistence;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 public class EntityManagers {
     private EntityManagers() {
     }
@@ -23,5 +24,9 @@ public class EntityManagers {
                 }
         ).createEntityManager()
         );
+    }
+
+    public static void closeAllEmfs() {
+        emfs.values().forEach(EntityManagerFactory::close);
     }
 }
