@@ -16,6 +16,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static utils.RandomDataUtils.randomUsername;
 
@@ -46,7 +47,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public void addFriend(UserJson targetUser, int count) {
+    public List<String> addFriend(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = udUserRepository.findById(
                     targetUser.id()
@@ -62,10 +63,11 @@ public class UsersDbClient implements UsersClient {
                 });
             }
         }
+        return null;
     }
 
     @Override
-    public void addIncomeInvitation(UserJson targetUser, int count) {
+    public List<String> addIncomeInvitation(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = udUserRepository.findById(
                     targetUser.id()
@@ -81,10 +83,11 @@ public class UsersDbClient implements UsersClient {
                 });
             }
         }
+        return null;
     }
 
     @Override
-    public void addOutcomeInvitation(UserJson targetUser, int count) {
+    public List<String> addOutcomeInvitation(UserJson targetUser, int count) {
         if (count > 0) {
             UserEntity targetEntity = udUserRepository.findById(
                     targetUser.id()
@@ -100,6 +103,7 @@ public class UsersDbClient implements UsersClient {
                 });
             }
         }
+        return null;
     }
 
     private UserEntity userEntity(String username) {
