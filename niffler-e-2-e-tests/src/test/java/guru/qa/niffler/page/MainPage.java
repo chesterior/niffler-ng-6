@@ -18,6 +18,7 @@ public class MainPage {
     private final SelenideElement statisticsComponent = $x(".//h2[text()='Statistics']");
     private final SelenideElement historyOfSpendingsComponent = $x(".//h2[text()='History of Spendings']");
 
+
     public EditSpendingPage editSpending(String spendingDescription) {
         tableRows.find(text(spendingDescription)).$$("td").get(5).click();
         return new EditSpendingPage();
