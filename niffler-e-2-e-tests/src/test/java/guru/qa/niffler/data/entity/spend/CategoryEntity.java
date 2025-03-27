@@ -29,6 +29,12 @@ public class CategoryEntity implements Serializable {
   @Column(nullable = false)
   private boolean archived;
 
+  public CategoryEntity() {
+  }
+
+  public CategoryEntity(UUID categoryId) {
+  }
+
   public static CategoryEntity fromJson(CategoryJson json) {
     CategoryEntity ce = new CategoryEntity();
     ce.setId(json.id());
