@@ -3,130 +3,145 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
-import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.jdbc.Connections.holder;
+import static guru.qa.niffler.data.tpl.Connections.holder;
 
-@ParametersAreNonnullByDefault
-public class AuthUserDaoJdbc implements AuthUserDao {
+public class AuthUserDAOJdbc implements AuthUserDao {
 
-  private static final Config CFG = Config.getInstance();
-  private final String url = CFG.authJdbcUrl();
+    private static final Config CFG = Config.getInstance();
 
-  @SuppressWarnings("resource")
-  @Nonnull
-  @Override
-  public AuthUserEntity create(AuthUserEntity user) {
-    try (PreparedStatement ps = holder(url).connection().prepareStatement(
-        """
-                INSERT INTO "user" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) 
-                VALUES (?, ?, ?, ?, ?, ?)
-            """,
-        PreparedStatement.RETURN_GENERATED_KEYS)) {
-      ps.setString(1, user.getUsername());
-      ps.setString(2, user.getPassword());
-      ps.setBoolean(3, user.getEnabled());
-      ps.setBoolean(4, user.getAccountNonExpired());
-      ps.setBoolean(5, user.getAccountNonLocked());
-      ps.setBoolean(6, user.getCredentialsNonExpired());
+    private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-      ps.executeUpdate();
+    @Nonnull
+    @Override
+    public AuthUserEntity create(AuthUserEntity authUser) {
+        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+                "INSERT INTO \"user\" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) " +
+                        "VALUES (?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS
+        )) {
+            ps.setString(1, authUser.getUsername());
+            ps.setString(2, authUser.getPassword());
+            ps.setBoolean(3, authUser.getEnabled());
+            ps.setBoolean(4, authUser.getAccountNonExpired());
+            ps.setBoolean(5, authUser.getAccountNonLocked());
+            ps.setBoolean(6, authUser.getCredentialsNonExpired());
 
-      final UUID generatedKey;
-      try (ResultSet rs = ps.getGeneratedKeys()) {
-        if (rs.next()) {
-          generatedKey = rs.getObject("id", UUID.class);
-        } else {
-          throw new SQLException("Can`t find id in ResultSet");
+            ps.executeUpdate();
+
+            final UUID generatedKeys;
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    generatedKeys = rs.getObject("id", UUID.class);
+                } else {
+                    throw new SQLException("Can't find id in ResultSet");
+                }
+            }
+            authUser.setId(generatedKeys);
+            return authUser;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
-      user.setId(generatedKey);
-      return user;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
-  }
 
-  @SuppressWarnings("resource")
-  @Nonnull
-  @Override
-  public Optional<AuthUserEntity> findById(UUID id) {
-    try (PreparedStatement ps = holder(url).connection().prepareStatement("""
-                SELECT * FROM "user" WHERE id = ?
-        """)) {
-      ps.setObject(1, id);
-
-      ps.execute();
-
-      try (ResultSet rs = ps.getResultSet()) {
-        if (rs.next()) {
-          return Optional.ofNullable(
-              AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow())
-          );
-        } else {
-          return Optional.empty();
+    @Nonnull
+    @Override
+    public Optional<AuthUserEntity> findById(UUID id) {
+        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+                "SELECT * FROM \"user\" WHERE id = ?"
+        )) {
+            ps.setObject(1, id);
+            ps.execute();
+            try (ResultSet rs = ps.getResultSet()) {
+                if (rs.next()) {
+                    AuthUserEntity au = new AuthUserEntity();
+                    au.setId(rs.getObject("id", UUID.class));
+                    au.setUsername(rs.getString("username"));
+                    au.setEnabled(rs.getBoolean("enabled"));
+                    au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+                    au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+                    au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+                    return Optional.of(au);
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
-  }
 
-  @SuppressWarnings("resource")
-  @Nonnull
-  @Override
-  public Optional<AuthUserEntity> findByUsername(String username) {
-    try (PreparedStatement ps = holder(url).connection().prepareStatement("""
-                SELECT * FROM "user" WHERE username = ?
-        """)) {
-      ps.setString(1, username);
-
-      ps.execute();
-
-      try (ResultSet rs = ps.getResultSet()) {
-        if (rs.next()) {
-          return Optional.ofNullable(
-              AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow())
-          );
-        } else {
-          return Optional.empty();
+    @Nonnull
+    @Override
+    public Optional<AuthUserEntity> findByUsername(String username) {
+        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+                "SELECT * FROM \"user\" WHERE username = ?"
+        )) {
+            ps.setObject(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    AuthUserEntity au = new AuthUserEntity();
+                    au.setId(rs.getObject("id", UUID.class));
+                    au.setUsername(rs.getString("username"));
+                    au.setEnabled(rs.getBoolean("enabled"));
+                    au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+                    au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+                    au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+                    return Optional.of(au);
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
-  }
 
-  @SuppressWarnings("resource")
-  @Nonnull
-  @Override
-  public List<AuthUserEntity> findAll() {
-    try (PreparedStatement ps = holder(url).connection().prepareStatement(
-        """
-            SELECT * FROM "user" 
-            """)) {
-      ps.execute();
-      List<AuthUserEntity> result = new ArrayList<>();
-      try (ResultSet rs = ps.getResultSet()) {
-        while (rs.next()) {
-          result.add(
-              AuthUserEntityRowMapper.instance.mapRow(rs, rs.getRow())
-          );
+    @Override
+    public void remove(AuthUserEntity user) {
+        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+                "DELETE FROM \"user\" WHERE id = ?"
+        )) {
+            ps.setObject(1, user.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
-      return result;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
-  }
+
+    @Nonnull
+    @Override
+    public List<AuthUserEntity> findAll() {
+        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+                "SELECT * FROM \"user\"")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                List<AuthUserEntity> authUsers = new ArrayList<>();
+                while (rs.next()) {
+                    AuthUserEntity au = new AuthUserEntity();
+                    au.setId(rs.getObject("id", UUID.class));
+                    au.setUsername(rs.getString("username"));
+                    au.setEnabled(rs.getBoolean("enabled"));
+                    au.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+                    au.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+                    au.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+                    authUsers.add(au);
+                }
+                return authUsers;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

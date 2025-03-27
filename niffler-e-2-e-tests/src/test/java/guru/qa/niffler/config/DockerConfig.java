@@ -1,7 +1,5 @@
 package guru.qa.niffler.config;
 
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nonnull;
 
 enum DockerConfig implements Config {
@@ -61,9 +59,8 @@ enum DockerConfig implements Config {
     return "jdbc:postgresql://niffler-all-db:5432/niffler-currency";
   }
 
-  @NotNull
   @Override
-  public String currencyGrpcAddress() {
-    return "currency.niffler.dc";
+  public String ghUrl() {
+    return "";
   }
 }

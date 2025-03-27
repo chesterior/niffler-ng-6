@@ -10,8 +10,8 @@ import guru.qa.niffler.data.repository.UdUserRepository;
 import guru.qa.niffler.data.repository.impl.AuthUserRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.UdUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
-import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.rest.CurrencyValues;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

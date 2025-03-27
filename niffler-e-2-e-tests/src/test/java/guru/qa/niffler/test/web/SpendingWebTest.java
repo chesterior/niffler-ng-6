@@ -1,11 +1,10 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
-import guru.qa.niffler.jupiter.annotation.Spending;
-import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
@@ -13,26 +12,21 @@ import org.junit.jupiter.api.Test;
 public class SpendingWebTest extends BaseTest {
 
     @User(
-            username = "duck",
-            categories = {@Category(
-                    archived = true
-            )},
-            spendings = {@Spending(
+            spendings = @Spending(
                     category = "Обучение",
                     description = "Обучение Advanced 2.0",
                     amount = 79990
-            )}
+            )
     )
     @Test
-    void categoryDescriptionShouldBeChangedFromTable(SpendJson spend) {
+    void categoryDescriptionShouldBeChangedFromTable(UserJson user) {
         final String newDescription = "Обучение Niffler Next Generation";
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .successLogin("duck", "12345")
-                .editSpending(spend.description())
+                .successLogin(user.username(), user.testData().password())
+                .editSpending("Обучение Advanced 2.0")
                 .setNewSpendingDescription(newDescription)
-                .save();
-
+                .saveSpending();
         mainPage.checkThatTableContainsSpending(newDescription);
     }
 }
