@@ -27,9 +27,13 @@ public class FriendsPage {
         allPeopleSection.click();
     }
 
+    @Step("Search friends in table")
+    public void searchFriend(String friend) {
+        searchFriend.setValue(friend).pressEnter();
+    }
+
     @Step("Check that friend present in friends table")
     public void checkThatFriendPresentInFriendsTable(String friend) {
-        searchFriend.setValue(friend).pressEnter();
         friendsTableRows.findBy(text(friend)).shouldBe(visible);
     }
 

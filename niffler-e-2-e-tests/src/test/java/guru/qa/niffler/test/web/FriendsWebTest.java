@@ -20,6 +20,7 @@ public class FriendsWebTest extends BaseTest {
                 .successLogin(user.username(), user.testData().password());
 
         mainPage.openFriendsPage();
+        friendsPage.searchFriend(user.testData().friends().getFirst());
         friendsPage.checkThatFriendPresentInFriendsTable(user.testData().friends().getFirst());
     }
 
