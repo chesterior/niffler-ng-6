@@ -10,7 +10,8 @@ import java.time.Duration;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class FriendsPage {
 
@@ -19,10 +20,16 @@ public class FriendsPage {
     private final SelenideElement thereAreNoUsersYet = $x(".//p[text()='There are no users yet']");
     private final String acceptButton = ".//button[text()='Accept']";
     private final String waitingMessage = ".//span[text()='Waiting...']";
+    private final SelenideElement searchFriend = $x(".//input[@placeholder='Search']");
 
     @Step("Open all people section")
     public void openAllPeopleSection() {
         allPeopleSection.click();
+    }
+
+    @Step("Search friends in table")
+    public void searchFriend(String friend) {
+        searchFriend.setValue(friend).pressEnter();
     }
 
     @Step("Check that friend present in friends table")
@@ -43,12 +50,14 @@ public class FriendsPage {
 
     @Step("Check that income invitation in friends table")
     public void checkThatIncomeInvitationInFriendsTable(String friendIncome) {
+        searchFriend.setValue(friendIncome).pressEnter();
         ElementsCollection elements = findFriend(friendIncome);
         elements.first().$x(acceptButton).shouldBe(visible);
     }
 
     @Step("Check that income invitation in friends table")
     public void checkThatOutcomeInvitationInFriendsTable(String friendOutcome) {
+        searchFriend.setValue(friendOutcome).pressEnter();
         ElementsCollection elements = findFriend(friendOutcome);
         elements.first().$x(waitingMessage).shouldBe(visible);
     }

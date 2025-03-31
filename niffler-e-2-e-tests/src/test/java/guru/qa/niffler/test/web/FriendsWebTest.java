@@ -1,55 +1,60 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtensions.*;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtensions.UserType.Type.*;
 
 @WebTest
 public class FriendsWebTest extends BaseTest {
 
     @Test
+    @User(friends = 1)
     @DisplayName("Friend should be present in friends table")
-    void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIENDS) StaticUser user) {
+    void friendShouldBePresentInFriendsTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .successLogin(user.username(), user.password());
+                .successLogin(user.username(), user.testData().password());
 
         mainPage.openFriendsPage();
-        friendsPage.checkThatFriendPresentInFriendsTable(user.friend());
+        friendsPage.searchFriend(user.testData().friends().getFirst());
+        friendsPage.checkThatFriendPresentInFriendsTable(user.testData().friends().getFirst());
     }
 
     @Test
+    @User
     @DisplayName("Friend table should be empty for new user")
-    void friendTableShouldBeEmptyForNewUser(@UserType(EMPTY) StaticUser user) {
+    void friendTableShouldBeEmptyForNewUser(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .successLogin(user.username(), user.password());
+                .successLogin(user.username(), user.testData().password());
 
         mainPage.openFriendsPage();
         friendsPage.checkThatFriendsTableIsEmpty();
     }
 
     @Test
+    @User(incomeInvitations = 1)
     @DisplayName("Income invitation be present in friends table")
-    void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) StaticUser user) {
+    void incomeInvitationBePresentInFriendsTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .successLogin(user.username(), user.password());
+                .successLogin(user.username(), user.testData().password());
 
         mainPage.openFriendsPage();
-        friendsPage.checkThatIncomeInvitationInFriendsTable(user.income());
+        friendsPage.checkThatIncomeInvitationInFriendsTable(user.testData().incomeInvitations().get(0));
     }
 
     @Test
+    @User(outcomeInvitations = 1)
     @DisplayName("Outcome invitation be present in all peoples table")
-    void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
+    void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .successLogin(user.username(), user.password());
+                .successLogin(user.username(), user.testData().password());
 
         mainPage.openFriendsPage();
         friendsPage.openAllPeopleSection();
-        friendsPage.checkThatOutcomeInvitationInFriendsTable(user.outcome());
+        friendsPage.checkThatOutcomeInvitationInFriendsTable(user.testData().outcomeInvitations().get(0));
     }
 }
